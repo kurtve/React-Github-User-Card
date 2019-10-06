@@ -2,24 +2,22 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 
+import User from './components/User.js';
+import UserForm from './components/UserForm.js';
+
 
 const AppWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	border: 1px solid green;
+
+	margin-top: 30px;
 
 	h1 {
-		font-size: 6rem;
-	}
-
-	h3 {
-		font-size: 3rem;
-	}
-
-	img {
-		height: 100px;
-		width: auto;
-		margin: 5px;
+		border: 1px solid red;
+		font-size: 5rem;
+		padding-bottom: 10px;
 	}
 
 `;
@@ -30,68 +28,77 @@ class App extends Component {
 		super();
 
 		this.state = {
-			breed: 'husky',
-			images: []
+			username: '',
+			data: {},
+			followers: []
 		};
+
+		console.log('in App constructor');
+		console.log(this.state);
 	}
 
 
 	componentDidMount() {
-		this.fetchDogs();
-	}
-
-
-	componentDidUpdate(prevProps, prevState) {
-		if (prevState.breed !== this.state.breed) {
-			this.setState({images: []});
-			this.fetchDogs();
+		if (this.state.username !== '') {
+			this.fetchProfile(this.state.username);
 		}
 	}
 
 
-	handleChange = (event) => {
+	componentDidUpdate(prevProps, prevState) {
+		if ((prevState.username !== this.state.username) && (this.state.username !== '')) {
+			this.setState({ data: {}, followers: [] });
+			this.fetchProfile(this.state.username);
+		}
+	}
+
+
+	setUser = (user) => {
 		this.setState({
-			breed: event.target.value
+			username: user
 		});
 	};
 
 
-	fetchDogs = () => {
-		axios.get(`https://dog.ceo/api/breed/${this.state.breed}/images`)
+	fetchProfile = (username) => {
+		axios.get(`https://api.github.com/users/${username}`)
 			.then(result => {
-				this.setState({...this.state, images: result.data.message});
+				console.log('in fetchProfile');
+				console.log(result);
+
+				this.setState({...this.state, data: result.data});
+
+				// successfully got user -- now get followers
+				this.fetchFollowers(username);
 			})
 			.catch(error => {
 				console.log(error);
 			});	
-	}
+	};
+
+
+	fetchFollowers = (username) => {
+		axios.get(`https://api.github.com/users/${username}/followers`)
+			.then(result => {
+				console.log('in fetchFollowers');
+				console.log(result);
+
+				this.setState({...this.state, follower: result.data});
+			})
+			.catch(error => {
+				console.log(error);
+			});	
+	};
 
 
 	render() {
 		return (
 			<AppWrapper>
-				<div className='main'>
-					<h1>Dogs!</h1>
-					<h3>Breed: {this.state.breed}</h3>
+				<h1>GitHub User Lookup</h1>
 
-					<select value={this.state.breed} onChange={this.handleChange} >
-						<option value='husky'>Husky</option>
-						<option value='beagle'>Beagle</option>
-						<option value='corgi'>Corgi</option>
-					</select>
+				<UserForm setUser={this.setUser} />
 
-					<div>
-						{this.state.images.map((image, idx) => {
-							return (
-								<img key={idx}
-									 src={image}
-									 alt={`dog ${idx}`}
-								/>
-							);
-						})}
-					</div>
-
-				</div>
+				<User username={this.state.username} data={this.state.data} />
 			</AppWrapper>
 		);
 	}
