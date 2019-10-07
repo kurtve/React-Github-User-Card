@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import User from './components/User.js';
 import UserForm from './components/UserForm.js';
+import FollowerList from './components/FollowerList.js';
 
 
 const AppWrapper = styled.div`
@@ -54,9 +55,7 @@ class App extends Component {
 
 
 	setUser = (user) => {
-		this.setState({
-			username: user
-		});
+		this.setState({ username: user });
 	};
 
 
@@ -66,7 +65,7 @@ class App extends Component {
 				console.log('in fetchProfile');
 				console.log(result);
 
-				this.setState({...this.state, data: result.data});
+				this.setState({ data: result.data });
 
 				// successfully got user -- now get followers
 				this.fetchFollowers(username);
@@ -83,7 +82,7 @@ class App extends Component {
 				console.log('in fetchFollowers');
 				console.log(result);
 
-				this.setState({...this.state, follower: result.data});
+				this.setState({ followers: result.data });
 			})
 			.catch(error => {
 				console.log(error);
@@ -99,6 +98,8 @@ class App extends Component {
 				<UserForm setUser={this.setUser} />
 
 				<User username={this.state.username} data={this.state.data} />
+
+				<FollowerList followers={this.state.followers} />
 			</AppWrapper>
 		);
 	}

@@ -10,6 +10,7 @@ const UserWrapper = styled.div`
 	border: 1px solid blue;
 	margin: 20px 10px;
 	font-size: 1.8rem;
+	padding: 10px;
 
 	h3 {
 		font-size: 2.6rem;
@@ -27,7 +28,7 @@ const UserWrapper = styled.div`
 	}
 
 	.timestamp {
-		font-size: 1.4rem;
+		font-size: 1.2rem;
 		font-style: italic;
 	}
 
@@ -47,24 +48,31 @@ const User = (props) =>  {
 		);
 	}
 
+	if (props.data.login === undefined) {
+		return (
+			<UserWrapper>
+				<h3>Loading...</h3>
+			</UserWrapper>			
+		);
+	}
 
 	return (
 		<UserWrapper>
-			<h3>Handle: {props.data.login}</h3>
+			<h3>{props.data.name}</h3>
 
 			<div className='avatar'>
 				<img src={props.data.avatar_url} alt={props.data.name} />
 			</div>
 
 			<div>
-				<p>Name: {props.data.name}</p>
-				<p>Github profile:<a href={props.data.html_url}>{props.data.html_url}</a></p>
+				<p>Handle: {props.data.login}</p>
+				<p>Profile:<a href={props.data.html_url}>{props.data.html_url}</a></p>
 				<p>Location: {props.data.location}</p>
 				<p>Followers: {props.data.followers}</p>
 				<p>Following: {props.data.following}</p>
 				<div className='timestamp'>
-					<p>Created: {props.data.created_at}</p>
-					<p>Updated: {props.data.updated_at}</p>
+					<p>Created: {props.data.created_at.substring(0,10)}</p>
+					<p>Updated: {props.data.updated_at.substring(0,10)}</p>
 				</div>
 			</div>
 		</UserWrapper>
