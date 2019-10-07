@@ -28,10 +28,14 @@ class App extends Component {
 	constructor() {
 		super();
 
+		// check to see if we have previously specified a user
+		const user = (localStorage.getItem('GUC_username') || '');
+
 		this.state = {
-			username: '',
+			username: user,
 			data: {},
-			followers: []
+			followers: [],
+			error: ''
 		};
 
 		console.log('in App constructor');
@@ -47,14 +51,17 @@ class App extends Component {
 
 
 	componentDidUpdate(prevProps, prevState) {
-		if ((prevState.username !== this.state.username) && (this.state.username !== '')) {
+		if (prevState.username !== this.state.username) {
 			this.setState({ data: {}, followers: [] });
-			this.fetchProfile(this.state.username);
+			if (this.state.username !== '') {
+				this.fetchProfile(this.state.username);
+			}
 		}
 	}
 
 
 	setUser = (user) => {
+		localStorage.setItem('GUC_username', user);
 		this.setState({ username: user });
 	};
 
@@ -72,6 +79,8 @@ class App extends Component {
 			})
 			.catch(error => {
 				console.log(error);
+
+				this.setState({ error: 'Sorry, unable to access that user' });
 			});	
 	};
 
@@ -97,7 +106,7 @@ class App extends Component {
 
 				<UserForm setUser={this.setUser} />
 
-				<User username={this.state.username} data={this.state.data} />
+				<User username={this.state.username} data={this.state.data} error={this.state.error} />
 
 				<FollowerList followers={this.state.followers} />
 			</AppWrapper>

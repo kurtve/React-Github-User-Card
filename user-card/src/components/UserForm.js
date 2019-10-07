@@ -67,9 +67,6 @@ class UserForm extends Component {
 	submitHandler = (e) => {
 		e.preventDefault();
 
-		// if input field is blank, ignore the submit
-		if (this.state.newuser === '') return;
-
 		// send the user up the chain to be processed
 		this.props.setUser(this.state.newuser);
 

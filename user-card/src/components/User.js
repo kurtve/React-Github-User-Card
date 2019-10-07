@@ -48,6 +48,14 @@ const User = (props) =>  {
 		);
 	}
 
+	if (props.error !== '') {
+		return (
+			<UserWrapper>
+				<h3>{props.error}</h3>
+			</UserWrapper>			
+		);
+	}
+
 	if (props.data.login === undefined) {
 		return (
 			<UserWrapper>
